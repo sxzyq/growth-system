@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>个人成长记录系统</title>
+  <link rel="stylesheet" href="style.css?v=73">
+</head>
+<body>
+  <!-- 动态背景装饰 -->
+  <div class="decorations" aria-hidden="true">
+    <div class="star twinkle" style="top:8%;left:6%;">✦</div>
+    <div class="star twinkle" style="top:12%;left:92%;animation-delay:1.2s;">✦</div>
+    <div class="star twinkle" style="top:22%;left:3%;animation-delay:2.5s;">✧</div>
+    <div class="star twinkle" style="top:18%;left:88%;animation-delay:0.8s;">✧</div>
+    <div class="star twinkle" style="top:45%;left:12%;animation-delay:1.8s;">✦</div>
+    <div class="star twinkle" style="top:55%;left:78%;animation-delay:3.2s;">✧</div>
+    <div class="star twinkle" style="top:72%;left:8%;animation-delay:0.5s;">✦</div>
+    <div class="star twinkle" style="top:65%;left:94%;animation-delay:2.1s;">✧</div>
+    <div class="shooting-star"></div>
+    <div class="leaf fall" style="left:10%;animation-delay:0s;">🍃</div>
+    <div class="leaf fall" style="left:30%;animation-delay:4s;">🌿</div>
+    <div class="leaf fall" style="left:50%;animation-delay:7s;">🍃</div>
+    <div class="leaf fall" style="left:70%;animation-delay:2s;">🍃</div>
+    <div class="leaf fall" style="left:90%;animation-delay:6s;">🌿</div>
+    <div class="leaf fall" style="left:18%;animation-delay:9s;">🍂</div>
+    <div class="leaf fall" style="left:82%;animation-delay:11s;">🌱</div>
+    <div class="flower sway" style="bottom:15%;left:5%;">❀</div>
+    <div class="flower sway" style="bottom:22%;left:95%;animation-delay:1s;">✿</div>
+    <div class="flower sway" style="top:35%;left:2%;animation-delay:2s;">❁</div>
+    <div class="flower sway" style="top:48%;left:96%;animation-delay:0.5s;">❀</div>
+    <div class="flower sway" style="bottom:38%;left:1%;animation-delay:1.5s;">✿</div>
+    <div class="dot-float" style="top:30%;left:20%;"></div>
+    <div class="dot-float" style="top:60%;left:85%;animation-delay:2s;"></div>
+    <div class="dot-float" style="top:75%;left:15%;animation-delay:4s;"></div>
+    <div class="dot-float" style="top:20%;left:65%;animation-delay:1s;"></div>
+    <div class="dot-float" style="top:85%;left:55%;animation-delay:3s;"></div>
+    <div class="dot-float" style="top:42%;left:45%;animation-delay:5s;"></div>
+  </div>
+
+  <div class="app">
+    <nav class="sidebar" id="sidebar">
+      <div class="nav-liquid" aria-hidden="true"><i class="nav-sheen"></i></div>
+      <div class="brand">
+        <div class="brand-icon">🌱</div>
+        <div class="brand-title">成长记录</div>
+      </div>
+      <button class="nav-item active" data-target="home">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-text">首页</span>
+      </button>
+      <button class="nav-item" data-target="daily">
+        <span class="nav-icon">📝</span>
+        <span class="nav-text">每日记录</span>
+      </button>
+      <button class="nav-item" data-target="plan">
+        <span class="nav-icon">📅</span>
+        <span class="nav-text">计划管理</span>
+      </button>
+      <button class="nav-item" data-target="review">
+        <span class="nav-icon">📊</span>
+        <span class="nav-text">复盘统计</span>
+      </button>
+      <button class="nav-item" data-target="display">
+        <span class="nav-icon">🖼️</span>
+        <span class="nav-text">展示</span>
+      </button>
+      <button class="nav-item" data-target="insight">
+        <span class="nav-icon">🔮</span>
+        <span class="nav-text">洞察</span>
+      </button>
+    </nav>
+
+    <main class="main" id="main">
+      <div class="theme-toggle" id="themeToggle" title="切换页面模式">
+        <button class="seg-btn" data-mode="normal" onclick="app.setTheme('normal')">正常</button>
+        <button class="seg-btn" data-mode="green" onclick="app.setTheme('green')">绿色</button>
+        <button class="seg-btn" data-mode="night" onclick="app.setTheme('night')">夜晚</button>
+      </div>
+
+      <!-- 首页 -->
+      <section id="home" class="section active">
+        <header class="page-header">
+          <div class="header-left">
+            <div class="mood-illustration" id="moodIllustration">
+              <div class="illo-sun"></div>
+              <div class="illo-rays"></div>
+            </div>
+            <div class="header-text">
+              <h1 class="greeting" id="greeting">你好</h1>
+              <p class="date-line" id="dateLine"><span class="calendar-icon">📅</span></p>
+            </div>
+          </div>
+          <div class="partner-wrap" id="partnerWrap" onclick="app.pokePartner()">
+            <div class="partner-walk">
+              <img class="partner-svg" id="partner" src="mascot.png" alt="我的成长伙伴">
+            </div>
+            <div class="partner-sparkle" id="partnerSparkle" aria-hidden="true">
+              <span class="sp1">✦</span><span class="sp2">✧</span><span class="sp3">✦</span>
+            </div>
+            <span class="partner-wave" id="partnerWave" aria-hidden="true">👋</span>
+            <div class="partner-bubble" id="partnerBubble"></div>
+            <div class="partner-label">我的成长伙伴</div>
+          </div>
+        </header>
+
+        <div class="card review-card washi-tape washi-purple watercolor-bg watercolor-pink" data-animate="1">
+          <div class="card-header">
+            <span class="card-icon">💫</span>
+            <span class="card-title">随机回顾</span>
+          </div>
+          <div id="randomReview" class="review-content">
+            <div class="empty-state">
+              <div class="illo-seedling"><div class="seed-stem"></div><div class="seed-leaf leaf-l"></div><div class="seed-leaf leaf-r"></div><div class="seed-pot"></div></div>
+              <p>还没有记录哦，写下第一条吧</p>
+              <button class="btn-text" onclick="app.navTo('daily')">去写今日记录 →</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="quick-actions" data-animate="2">
+          <button class="action-btn" onclick="app.navTo('daily')">
+            <span class="action-icon">✏️</span>
+            <span>写今日记录</span>
+          </button>
+          <button class="action-btn action-secondary" onclick="app.navTo('plan')">
+            <span class="action-icon">🎯</span>
+            <span>管理计划</span>
+          </button>
+        </div>
+
+        <div class="grid-2">
+          <div class="card stat-card wavy" data-animate="3">
+            <div class="stat-value" id="totalDays">0</div>
+            <div class="stat-label">记录天数</div>
+          </div>
+          <div class="card stat-card tilt-right" data-animate="4">
+            <div class="stat-value" id="todayState">-</div>
+            <div class="stat-label">今日状态</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <!-- 迷你月历 -->
+          <div class="card mini-calendar-card washi-tape washi-teal watercolor-bg watercolor-teal" data-animate="5">
+            <div class="card-header">
+              <span class="card-icon">📆</span>
+              <span class="card-title">本月概览</span>
+            </div>
+            <div class="mini-calendar-nav">
+              <button class="icon-btn" onclick="app.changeMiniMonth(-1)">‹</button>
+              <span id="miniCalendarTitle"></span>
+              <button class="icon-btn" onclick="app.changeMiniMonth(1)">›</button>
+            </div>
+            <div class="mini-calendar" id="miniCalendar"></div>
+            <p class="mini-calendar-summary" id="miniCalendarSummary"></p>
+          </div>
+
+          <!-- 便利贴 -->
+          <div class="card sticky-note washi-tape washi-gold watercolor-bg watercolor-gold" data-animate="6">
+            <div class="card-header">
+              <span class="card-icon">📌</span>
+              <span class="card-title">随手记</span>
+            </div>
+            <div class="note-list" id="noteList"></div>
+            <div class="empty-state" id="noteEmpty" style="display:none;">
+              <p>把容易忘的小事放在这里吧～</p>
+            </div>
+            <div class="input-row">
+              <input type="text" id="newNote" placeholder="输入备忘，按回车添加">
+              <button class="btn" onclick="app.addNote()">添加</button>
+            </div>
+            <button class="btn-text clear-btn" id="clearNotesBtn" onclick="app.clearDoneNotes()" style="display:none;">清空已完成</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 每日记录 -->
+      <section id="daily" class="section">
+        <header class="page-header daily-header">
+          <h1>每日记录</h1>
+          <div class="daily-date-nav">
+            <button class="icon-btn icon-btn-sm" onclick="app.changeDailyDate(-1)" title="前一天">‹</button>
+            <span class="nav-point-label daily-date-label" id="dailyDateLine" title="点击日历图标打开小日历" onclick="app.toggleMiniCal(event)"></span>
+            <button class="icon-btn icon-btn-sm" onclick="app.changeDailyDate(1)" title="后一天">›</button>
+            <button class="btn-text" onclick="app.goDailyToday()">今天</button>
+            <div class="mini-cal-pop" id="dailyMiniCal" hidden>
+              <div class="mini-cal-head">
+                <button type="button" class="mini-cal-arrow" onclick="app.miniCalNav(-1)" title="上个月">‹</button>
+                <span class="mini-cal-title" id="miniCalTitle"></span>
+                <button type="button" class="mini-cal-arrow" onclick="app.miniCalNav(1)" title="下个月">›</button>
+                <button type="button" class="mini-cal-today" onclick="app.miniCalToday()">今天</button>
+              </div>
+              <div class="mini-cal-week"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div>
+              <div class="mini-cal-grid" id="miniCalGrid"></div>
+            </div>
+          </div>
+        </header>
+
+        <div class="mascot-daily" id="dailyMascot" title="点我切换动作">
+          <div class="pose pose-sit active"><img src="mascot_daily_sit.png?v=5" alt="坐石等候"></div>
+          <div class="pose pose-stand"><img src="mascot_daily_stand.png?v=5" alt="撑伞而立"></div>
+          <div class="pose pose-walk"><img src="mascot_daily_walk.png?v=5" alt="踱步"></div>
+        </div>
+
+        <div class="card input-card border-green washi-tape washi-green watercolor-bg watercolor-green" data-animate="1">
+          <label for="completion"><span class="label-icon">🌿</span>今日完成情况</label>
+          <textarea id="completion" rows="4" placeholder="今天完成了哪些事？哪怕是小事都值得记录~"></textarea>
+        </div>
+
+        <div class="card input-card border-yellow washi-tape washi-gold watercolor-bg watercolor-gold" data-animate="2">
+          <label for="moment"><span class="label-icon">✨</span>百态（美好/糟糕瞬间）</label>
+          <textarea id="moment" rows="3" placeholder="今天有没有看到落叶、小猫，或者收到一句温暖的问候？也欢迎写下任何让你有感触的小事"></textarea>
+          <div class="photo-block">
+            <div class="photo-grid" id="momentPhotos"></div>
+            <div class="photo-actions">
+              <input type="file" id="photoInput" accept="image/*" multiple hidden onchange="app.addPhotos(this)">
+              <button type="button" class="btn-text photo-add-btn" onclick="document.getElementById('photoInput').click()" id="photoAddBtn">📷 添加照片（0/5）</button>
+              <span class="photo-hint">每天最多 5 张，自动压缩保存，点照片可放大</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card input-card border-orange washi-tape washi-gold watercolor-bg watercolor-gold" data-animate="3">
+          <div class="tag-header" onclick="app.toggleTagPanel()">
+            <label><span class="label-icon">🏷️</span>今日标签 <span class="tag-count" id="tagCount">（已选 0）</span></label>
+            <span class="tag-toggle" id="tagToggle">展开</span>
+          </div>
+          <div class="tag-panel" id="tagPanel" style="display:none;">
+            <p class="input-hint">想选几个就选几个，帮你之后做情绪关联分析</p>
+            <div class="tag-section">
+              <div class="tag-section-title">场景</div>
+              <div class="scene-tags" id="sceneTags"></div>
+            </div>
+            <div class="tag-section">
+              <div class="tag-section-title">表情</div>
+              <div class="emoji-tags" id="emojiTags"></div>
+            </div>
+            <p class="tag-hint" id="tagHint"></p>
+          </div>
+          <div class="selected-tags" id="selectedTags"></div>
+        </div>
+
+        <div class="card input-card border-pink washi-tape washi-pink watercolor-bg watercolor-pink" data-animate="4">
+          <label><span class="label-icon">🎨</span>情绪颜色</label>
+          <p class="input-hint">选一种颜色代表今天的心情，深色浅色都没关系</p>
+          <div class="mood-palette" id="moodPalette"></div>
+          <p class="mood-name" id="moodName"></p>
+        </div>
+
+        <div class="card input-card border-purple washi-tape washi-purple watercolor-bg watercolor-teal" data-animate="5">
+          <label><span class="label-icon">⭐</span>今日评分（1-5 分）</label>
+          <div class="star-rating" id="starRating">
+            <svg width="0" height="0" style="position:absolute;"><defs>
+              <linearGradient id="starBodyGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#FFE873"/>
+                <stop offset="45%" stop-color="#FFCE33"/>
+                <stop offset="100%" stop-color="#F0AD1E"/>
+              </linearGradient>
+            </defs></svg>
+            <span class="star" data-value="1">
+              <svg class="star-svg" viewBox="0 0 24 24" aria-hidden="true">
+                <path class="star-body" d="M12 1.8 L14.4 7.2 L20 8.2 L15.8 12 L17.2 18 L12 15 L6.8 18 L8.2 12 L4 8.2 L9.6 7.2 Z"/>
+                <g class="star-eye"><circle class="eyeball" cx="9.3" cy="9.2" r="1.9"/><circle class="pupil" cx="9.5" cy="8.7" r="1.05"/><circle class="eye-hi" cx="9.2" cy="8.35" r="0.4"/></g>
+                <g class="star-eye"><circle class="eyeball" cx="14.7" cy="9.2" r="1.9"/><circle class="pupil" cx="14.9" cy="8.7" r="1.05"/><circle class="eye-hi" cx="14.6" cy="8.35" r="0.4"/></g>
+                <path class="star-mouth" d="M9.6 12.2 Q12 17 14.4 12.2 Z"/>
+                <path class="star-tongue" d="M10.7 13.6 Q12 15.8 13.3 13.6 Z"/>
+                <ellipse class="star-blush" cx="9.4" cy="11.6" rx="1.1" ry="0.6"/>
+                <ellipse class="star-blush" cx="14.6" cy="11.6" rx="1.1" ry="0.6"/>
+                <path class="star-gloss" d="M8.2 6.6 Q9.8 4.4 12.6 4.5 Q11.5 5 11.2 5.3 Q9.4 5.4 8.9 6.9 Q8.6 7.3 8.2 6.6 Z"/>
+                <path class="star-sparkle" d="M16 6.8 L16.3 7.7 L17.2 8 L16.3 8.3 L16 9.2 L15.7 8.3 L14.8 8 L15.7 7.7 Z"/>
+                <circle class="star-dot" cx="15.2" cy="5.8" r="0.55"/>
+                <circle class="star-dot" cx="16.4" cy="9.8" r="0.45"/>
+                <circle class="star-dot" cx="13.6" cy="10.6" r="0.4"/>
+                <circle class="star-dot" cx="7.4" cy="9.4" r="0.45"/>
+                <circle class="star-dot" cx="14.4" cy="14.4" r="0.45"/>
+                <circle class="star-dot" cx="9.6" cy="14.6" r="0.4"/>
+              </svg>
+            </span>
+            <span class="star" data-value="2">
+              <svg class="star-svg" viewBox="0 0 24 24" aria-hidden="true">
+                <path class="star-body" d="M12 1.8 L14.4 7.2 L20 8.2 L15.8 12 L17.2 18 L12 15 L6.8 18 L8.2 12 L4 8.2 L9.6 7.2 Z"/>
+                <g class="star-eye"><circle class="eyeball" cx="9.3" cy="9.2" r="1.9"/><circle class="pupil" cx="9.5" cy="8.7" r="1.05"/><circle class="eye-hi" cx="9.2" cy="8.35" r="0.4"/></g>
+                <g class="star-eye"><circle class="eyeball" cx="14.7" cy="9.2" r="1.9"/><circle class="pupil" cx="14.9" cy="8.7" r="1.05"/><circle class="eye-hi" cx="14.6" cy="8.35" r="0.4"/></g>
+                <path class="star-mouth" d="M9.6 12.2 Q12 17 14.4 12.2 Z"/>
+                <path class="star-tongue" d="M10.7 13.6 Q12 15.8 13.3 13.6 Z"/>
+                <ellipse class="star-blush" cx="9.4" cy="11.6" rx="1.1" ry="0.6"/>
+                <ellipse class="star-blush" cx="14.6" cy="11.6" rx="1.1" ry="0.6"/>
+                <path class="star-gloss" d="M8.2 6.6 Q9.8 4.4 12.6 4.5 Q11.5 5 11.2 5.3 Q9.4 5.4 8.9 6.9 Q8.6 7.3 8.2 6.6 Z"/>
+                <path class="star-sparkle" d="M16 6.8 L16.3 7.7 L17.2 8 L16.3 8.3 L16 9.2 L15.7 8.3 L14.8 8 L15.7 7.7 Z"/>
+                <circle class="star-dot" cx="15.2" cy="5.8" r="0.55"/>
+                <circle class="star-dot" cx="16.4" cy="9.8" r="0.45"/>
+                <circle class="star-dot" cx="13.6" cy="10.6" r="0.4"/>
+                <circle class="star-dot" cx="7.4" cy="9.4" r="0.45"/>
+                <circle class="star-dot" cx="14.4" cy="14.4" r="0.45"/>
+                <circle class="star-dot" cx="9.6" cy="14.6" r="0.4"/>
+              </svg>
+            </span>
+            <span class="star" data-value="3">
+              <svg class="star-svg" viewBox="0 0 24 24" aria-hidden="true">
+                <path class="star-body" d="M12 1.8 L14.4 7.2 L20 8.2 L15.8 12 L17.2 18 L12 15 L6.8 18 L8.2 12 L4 8.2 L9.6 7.2 Z"/>
+                <g class="star-eye"><circle class="eyeball" cx="9.3" cy="9.2" r="1.9"/><circle class="pupil" cx="9.5" cy="8.7" r="1.05"/><circle class="eye-hi" cx="9.2" cy="8.35" r="0.4"/></g>
+                <g class="star-eye"><circle class="eyeball" cx="14.7" cy="9.2" r="1.9"/><circle class="pupil" cx="14.9" cy="8.7" r="1.05"/><circle class="eye-hi" cx="14.6" cy="8.35" r="0.4"/></g>
+                <path class="star-mouth" d="M9.6 12.2 Q12 17 14.4 12.2 Z"/>
+                <path class="star-tongue" d="M10.7 13.6 Q12 15.8 13.3 13.6 Z"/>
+                <ellipse class="star-blush" cx="9.4" cy="11.6" rx="1.1" ry="0.6"/>
+                <ellipse class="star-blush" cx="14.6" cy="11.6" rx="1.1" ry="0.6"/>
+                <path class="star-gloss" d="M8.2 6.6 Q9.8 4.4 12.6 4.5 Q11.5 5 11.2 5.3 Q9.4 5.4 8.9 6.9 Q8.6 7.3 8.2 6.6 Z"/>
+                <path class="star-sparkle" d="M16 6.8 L16.3 7.7 L17.2 8 L16.3 8.3 L16 9.2 L15.7 8.3 L14.8 8 L15.7 7.7 Z"/>
+                <circle class="star-dot" cx="15.2" cy="5.8" r="0.55"/>
+                <circle class="star-dot" cx="16.4" cy="9.8" r="0.45"/>
+                <circle class="star-dot" cx="13.6" cy="10.6" r="0.4"/>
+                <circle class="star-dot" cx="7.4" cy="9.4" r="0.45"/>
+                <circle class="star-dot" cx="14.4" cy="14.4" r="0.45"/>
+                <circle class="star-dot" cx="9.6" cy="14.6" r="0.4"/>
+              </svg>
+            </span>
+            <span class="star" data-value="4">
+              <svg class="star-svg" viewBox="0 0 24 24" aria-hidden="true">
+                <path class="star-body" d="M12 1.8 L14.4 7.2 L20 8.2 L15.8 12 L17.2 18 L12 15 L6.8 18 L8.2 12 L4 8.2 L9.6 7.2 Z"/>
+                <g class="star-eye"><circle class="eyeball" cx="9.3" cy="9.2" r="1.9"/><circle class="pupil" cx="9.5" cy="8.7" r="1.05"/><circle class="eye-hi" cx="9.2" cy="8.35" r="0.4"/></g>
+                <g class="star-eye"><circle class="eyeball" cx="14.7" cy="9.2" r="1.9"/><circle class="pupil" cx="14.9" cy="8.7" r="1.05"/><circle class="eye-hi" cx="14.6" cy="8.35" r="0.4"/></g>
+                <path class="star-mouth" d="M9.6 12.2 Q12 17 14.4 12.2 Z"/>
+                <path class="star-tongue" d="M10.7 13.6 Q12 15.8 13.3 13.6 Z"/>
+                <ellipse class="star-blush" cx="9.4" cy="11.6" rx="1.1" ry="0.6"/>
+                <ellipse class="star-blush" cx="14.6" cy="11.6" rx="1.1" ry="0.6"/>
+                <path class="star-gloss" d="M8.2 6.6 Q9.8 4.4 12.6 4.5 Q11.5 5 11.2 5.3 Q9.4 5.4 8.9 6.9 Q8.6 7.3 8.2 6.6 Z"/>
+                <path class="star-sparkle" d="M16 6.8 L16.3 7.7 L17.2 8 L16.3 8.3 L16 9.2 L15.7 8.3 L14.8 8 L15.7 7.7 Z"/>
+                <circle class="star-dot" cx="15.2" cy="5.8" r="0.55"/>
+                <circle class="star-dot" cx="16.4" cy="9.8" r="0.45"/>
+                <circle class="star-dot" cx="13.6" cy="10.6" r="0.4"/>
+                <circle class="star-dot" cx="7.4" cy="9.4" r="0.45"/>
+                <circle class="star-dot" cx="14.4" cy="14.4" r="0.45"/>
+                <circle class="star-dot" cx="9.6" cy="14.6" r="0.4"/>
+              </svg>
+            </span>
+            <span class="star" data-value="5">
+              <svg class="star-svg" viewBox="0 0 24 24" aria-hidden="true">
+                <path class="star-body" d="M12 1.8 L14.4 7.2 L20 8.2 L15.8 12 L17.2 18 L12 15 L6.8 18 L8.2 12 L4 8.2 L9.6 7.2 Z"/>
+                <g class="star-eye"><circle class="eyeball" cx="9.3" cy="9.2" r="1.9"/><circle class="pupil" cx="9.5" cy="8.7" r="1.05"/><circle class="eye-hi" cx="9.2" cy="8.35" r="0.4"/></g>
+                <g class="star-eye"><circle class="eyeball" cx="14.7" cy="9.2" r="1.9"/><circle class="pupil" cx="14.9" cy="8.7" r="1.05"/><circle class="eye-hi" cx="14.6" cy="8.35" r="0.4"/></g>
+                <path class="star-mouth" d="M9.6 12.2 Q12 17 14.4 12.2 Z"/>
+                <path class="star-tongue" d="M10.7 13.6 Q12 15.8 13.3 13.6 Z"/>
+                <ellipse class="star-blush" cx="9.4" cy="11.6" rx="1.1" ry="0.6"/>
+                <ellipse class="star-blush" cx="14.6" cy="11.6" rx="1.1" ry="0.6"/>
+                <path class="star-gloss" d="M8.2 6.6 Q9.8 4.4 12.6 4.5 Q11.5 5 11.2 5.3 Q9.4 5.4 8.9 6.9 Q8.6 7.3 8.2 6.6 Z"/>
+                <path class="star-sparkle" d="M16 6.8 L16.3 7.7 L17.2 8 L16.3 8.3 L16 9.2 L15.7 8.3 L14.8 8 L15.7 7.7 Z"/>
+                <circle class="star-dot" cx="15.2" cy="5.8" r="0.55"/>
+                <circle class="star-dot" cx="16.4" cy="9.8" r="0.45"/>
+                <circle class="star-dot" cx="13.6" cy="10.6" r="0.4"/>
+                <circle class="star-dot" cx="7.4" cy="9.4" r="0.45"/>
+                <circle class="star-dot" cx="14.4" cy="14.4" r="0.45"/>
+                <circle class="star-dot" cx="9.6" cy="14.6" r="0.4"/>
+              </svg>
+            </span>
+          </div>
+          <p class="rating-text" id="ratingText"><span class="rating-main-text">点击星星评分</span><span class="rating-clear" id="ratingClear" style="display:none;" onclick="app.clearRating()">清除评分</span></p>
+        </div>
+
+        <div class="card input-card border-teal washi-tape washi-teal watercolor-bg watercolor-teal" data-animate="6">
+          <label for="reflection"><span class="label-icon">🪞</span>今日反思</label>
+          <textarea id="reflection" rows="3" placeholder="今天哪里做得好？哪里还可以改进？"></textarea>
+        </div>
+
+        <div class="card input-card border-blue washi-tape washi-green watercolor-bg watercolor-green" data-animate="7">
+          <label for="tomorrow"><span class="label-icon">🗓️</span>明日计划</label>
+          <textarea id="tomorrow" rows="3" placeholder="明天最重要的一件事是什么？"></textarea>
+          <p class="save-hint" id="saveHint"></p>
+        </div>
+
+        <div class="card summary-card tilt-left" data-animate="8" id="summaryCard" style="display:none;">
+          <div class="card-header">
+            <span class="card-icon">📋</span>
+            <span class="card-title">今日摘要</span>
+          </div>
+          <div id="dailySummary" class="summary-content"></div>
+        </div>
+      </section>
+
+      <!-- 计划管理 -->
+      <section id="plan" class="section">
+        <header class="page-header">
+          <h1>计划管理</h1>
+          <p class="date-line">把大目标拆成小步子，一步步往前走 🐾</p>
+        </header>
+
+        <div class="card plan-card border-green" data-animate="1">
+          <div class="card-header">
+            <span class="card-icon">☑️</span>
+            <span class="card-title">每日待办</span>
+            <span class="nav-point">
+              <button class="icon-btn icon-btn-sm" onclick="app.changeTodoDate(-1)" title="前一天">‹</button>
+              <span class="nav-point-label" id="todoDateNav"></span>
+              <button class="icon-btn icon-btn-sm" onclick="app.changeTodoDate(1)" title="后一天">›</button>
+              <button class="btn-text" onclick="app.goToday()">今天</button>
+            </span>
+          </div>
+          <div class="progress-line" id="todoProgress">已完成 0/0</div>
+          <div class="encourage" id="todoEncourage"></div>
+          <div class="todo-list" id="todoList"></div>
+          <div class="empty-state" id="todoEmpty" style="display:none;">
+            <div class="illo-stars">✦ ✧ ✦</div>
+            <p>今天发生了什么？先记下第一件小事吧</p>
+          </div>
+          <div class="input-row" id="newTodoRow">
+            <input type="text" id="newTodo" placeholder="输入待办事项，按回车添加~">
+            <button class="btn" id="addTodoBtn" onclick="app.addTodo()">添加</button>
+          </div>
+          <button class="btn-text clear-btn" id="clearDoneBtn" onclick="app.clearDoneTodos()" style="display:none;">清空已完成</button>
+        </div>
+
+        <div class="card plan-card border-yellow" data-animate="2">
+          <div class="card-header">
+            <span class="card-icon">🗓️</span>
+            <span class="card-title">每周任务</span>
+            <span class="nav-point">
+              <button class="icon-btn icon-btn-sm" onclick="app.changeWeekly(-1)" title="上一周">‹</button>
+              <span class="nav-point-label" id="weeklyDateNav"></span>
+              <button class="icon-btn icon-btn-sm" onclick="app.changeWeekly(1)" title="下一周">›</button>
+              <button class="btn-text" onclick="app.goThisWeek()">本周</button>
+            </span>
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar" id="weeklyProgressBar" style="width:0%"></div>
+          </div>
+          <div class="progress-text" id="weeklyProgressText">本周进度 0%</div>
+          <div class="todo-list" id="weeklyList"></div>
+          <div class="empty-state" id="weeklyEmpty" style="display:none;">
+            <div class="illo-flag"><div class="flag-pole"></div><div class="flag-cloth"></div></div>
+            <p>定下第一个小目标吧</p>
+          </div>
+          <div class="input-row" id="newWeeklyRow">
+            <input type="text" id="newWeekly" placeholder="本周最重要的一件事...">
+            <button class="btn" onclick="app.addWeeklyTask()">添加</button>
+          </div>
+        </div>
+
+        <div class="card plan-card border-purple" data-animate="3">
+          <div class="card-header">
+            <span class="card-icon">🎯</span>
+            <span class="card-title">阶段目标</span>
+          </div>
+          <div class="goal-groups" id="goalGroups"></div>
+          <div class="empty-state" id="goalEmpty" style="display:none;">
+            <div class="illo-flag"><div class="flag-pole"></div><div class="flag-cloth big"></div></div>
+            <p>给自己一个长期方向吧</p>
+          </div>
+          <div class="goal-form">
+            <input type="text" id="newGoalTitle" placeholder="目标名称">
+            <select id="newGoalPeriod">
+              <option value="月目标">月目标</option>
+              <option value="学期目标">学期目标</option>
+              <option value="年目标">年目标</option>
+            </select>
+            <button class="btn" onclick="app.addGoal()">添加</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 复盘统计 -->
+      <section id="review" class="section">
+        <header class="page-header">
+          <h1>复盘统计</h1>
+          <p class="date-line">回头看看这一周，你比自己想象中更厉害 ✨</p>
+        </header>
+        <div class="mascot-review" id="reviewMascot" aria-hidden="true">
+          <div class="mascot-review-inner" id="reviewMascotInner">
+            <img class="mascot-review-idle" src="mascot_v2_final.png" alt="">
+            <img class="mascot-review-blink" src="mascot_v2_blink.png" alt="">
+            <img class="mascot-review-pearl" src="mascot_v2_pearl.png" alt="">
+          </div>
+        </div>
+
+        <div class="card streak-card" data-animate="1">
+          <div class="streak-main">
+            <div class="streak-number" id="streakNumber">0</div>
+            <div class="streak-info">
+              <div class="streak-label">连续打卡天数</div>
+              <div class="streak-text" id="streakText">开始记录吧！</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card summary-auto-card" data-animate="2">
+          <div class="card-header">
+            <span class="card-icon">📊</span>
+            <span class="card-title">本周数据总结</span>
+          </div>
+          <div class="review-stats" id="reviewStats"></div>
+          <div class="review-summary-text" id="reviewSummaryText"></div>
+        </div>
+
+        <div class="card input-card border-yellow" data-animate="3">
+          <label for="weeklyInsight"><span class="label-icon">📝</span>本周感悟</label>
+          <textarea id="weeklyInsight" rows="4" placeholder="写下这周的收获、感动或想对自己说的话..."></textarea>
+        </div>
+
+        <div class="card timeline-card" data-animate="4">
+          <div class="card-header">
+            <span class="card-icon">🕰️</span>
+            <span class="card-title">本周时间线</span>
+          </div>
+          <div class="timeline" id="timeline"></div>
+        </div>
+      </section>
+
+      <!-- 展示 -->
+      <section id="display" class="section">
+        <header class="page-header">
+          <h1>展示</h1>
+          <p class="date-line">用另一种方式，看见自己的成长 🌈</p>
+        </header>
+
+        <div class="card calendar-card" data-animate="1">
+          <div class="card-header">
+            <span class="card-icon">📅</span>
+            <span class="card-title">日历视图</span>
+          </div>
+          <div class="calendar-nav">
+            <button class="icon-btn" onclick="app.changeDisplayMonth(-1)">‹</button>
+            <span id="displayCalendarTitle"></span>
+            <button class="icon-btn" onclick="app.changeDisplayMonth(1)">›</button>
+          </div>
+          <div class="calendar-weekdays">
+            <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+          </div>
+          <div class="calendar-grid" id="displayCalendar"></div>
+          <p class="calendar-hint">点击日期可标记 ⭐ 重要日或装饰色，再次点击取消</p>
+        </div>
+
+        <div class="card chart-card" data-animate="2">
+          <div class="card-header">
+            <span class="card-icon">📈</span>
+            <span class="card-title">评分趋势图</span>
+          </div>
+          <div class="chart-tabs">
+            <button class="chart-tab active" onclick="app.setChartRange(7, this)">近7天</button>
+            <button class="chart-tab" onclick="app.setChartRange(30, this)">近30天</button>
+          </div>
+          <div class="chart-wrap" id="trendChartWrap">
+            <svg class="chart" id="trendChart" preserveAspectRatio="none"></svg>
+          </div>
+          <div class="empty-state" id="chartEmpty" style="display:none;">
+            <p>还没有足够的数据，多记录几天就能看趋势啦</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 第三视角 · 个人洞察 -->
+      <section id="insight" class="section">
+        <header class="page-header">
+          <h1>第三视角 · 个人洞察</h1>
+          <p class="date-line">像一位懂你的朋友，帮你从数据里看见自己 🔮</p>
+        </header>
+
+        <div class="card insight-status-card" data-animate="1">
+          <div class="insight-status" id="insightStatus"></div>
+        </div>
+
+        <div class="card insight-card" data-animate="1">
+          <div class="card-header">
+            <span class="card-icon">🪄</span>
+            <span class="card-title">综合洞察 · 给你的专属报告</span>
+          </div>
+          <div class="insight-list" id="reportBlock"></div>
+        </div>
+
+        <div class="card insight-card" data-animate="2">
+          <div class="card-header">
+            <span class="card-icon">📅</span>
+            <span class="card-title">本周洞察</span>
+          </div>
+          <div class="insight-list" id="weeklyInsights"></div>
+        </div>
+
+        <div class="card insight-card" data-animate="3">
+          <div class="card-header">
+            <span class="card-icon">🌙</span>
+            <span class="card-title">本月洞察</span>
+          </div>
+          <div id="monthlyInsights"></div>
+        </div>
+
+        <div class="card insight-card" data-animate="4">
+          <div class="card-header">
+            <span class="card-icon">⚖️</span>
+            <span class="card-title">对比分析</span>
+          </div>
+          <div class="compare-buttons">
+            <button class="btn-text" onclick="app.compareInsight('mood-efficiency')">情绪颜色 vs 效率</button>
+            <button class="btn-text" onclick="app.compareInsight('rating-reflection')">评分 vs 反思深度</button>
+            <button class="btn-text" onclick="app.compareInsight('plan-completion')">有无计划 vs 完成率</button>
+          </div>
+          <div class="compare-result" id="compareResult"></div>
+        </div>
+
+        <div class="card insight-suggest-card" data-animate="5">
+          <div class="card-header">
+            <span class="card-icon">💡</span>
+            <span class="card-title">改善建议</span>
+          </div>
+          <div class="suggest-list" id="suggestList"></div>
+        </div>
+      </section>
+    </main>
+
+  <!-- 日期详情弹窗 -->
+  <div class="modal-overlay" id="dateModal" onclick="app.closeDateModal(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <span class="card-icon">📅</span>
+        <span class="card-title" id="modalTitle">详情</span>
+      </div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- 日历标记菜单 -->
+  <div class="mark-menu" id="markMenu" style="display:none;">
+    <div class="mark-menu-title">标记这一天</div>
+    <div class="mark-options">
+      <button class="mark-btn" onclick="app.markDate('star')">⭐ 重要日</button>
+      <button class="mark-btn color-dot" style="background:#FDE047" onclick="app.markDate('color','#FDE047')"></button>
+      <button class="mark-btn color-dot" style="background:#F472B6" onclick="app.markDate('color','#F472B6')"></button>
+      <button class="mark-btn color-dot" style="background:#4ADE80" onclick="app.markDate('color','#4ADE80')"></button>
+      <button class="mark-btn color-dot" style="background:#5ECCB8" onclick="app.markDate('color','#5ECCB8')"></button>
+      <button class="mark-btn color-dot" style="background:#3B82F6" onclick="app.markDate('color','#3B82F6')"></button>
+    </div>
+    <button class="btn-text" onclick="app.unmarkDate()">取消标记</button>
+  </div>
+
+  <!-- 励志语录弹窗 -->
+  <div class="quote-toast" id="quoteToast">
+    <div class="quote-toast-icon">💫</div>
+    <div class="quote-toast-text" id="quoteToastText"></div>
+    <button class="quote-toast-close" onclick="app.closeQuoteToast()">×</button>
+  </div>
+
+  <!-- 首页滑入语录条 -->
+  <div class="slide-quote" id="slideQuote" aria-hidden="true">
+    <span class="slide-quote-icon">🌱</span>
+    <span class="slide-quote-text" id="slideQuoteText"></span>
+  </div>
+
+  <!-- 全站吉祥物即时反馈 -->
+  <div class="mascot-feedback" id="mascotFeedback">
+    <img src="mascot.png" alt="我的成长伙伴" class="mascot-fb-img">
+    <div class="mascot-fb-bubble" id="mascotFbBubble"></div>
+  </div>
+
+  <!-- 照片查看灯箱 -->
+  <div class="photo-lightbox" id="photoLightbox" onclick="app.closePhotoLightbox()">
+    <img src="" alt="照片大图" id="photoLightboxImg">
+    <span class="photo-lightbox-close">×</span>
+  </div>
+
+  <!-- 主题切换光幕（柔和闪一下） -->
+  <div id="fxVeil" aria-hidden="true"></div>
+</div>
+
+  <script src="script.js?v=42"></script>
+  <script src="gsap-local.js?v=1"></script>
+  <script src="customease-local.js?v=1"></script>
+  <script src="fx-effects.js?v=36"></script>
+</body>
+</html>
