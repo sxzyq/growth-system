@@ -401,9 +401,11 @@ const app = (() => {
 
   function calcStreak() {
     const dates = new Set(getRecordDates());
+    // 只算真正有内容的记录，排除自动创建的空占位（如每日记录页生成的当天空记录）
+    const isReal = r => r && (r.completion || r.moment || r.reflection || r.tomorrow || r.moodColor || r.rating || (r.photos && r.photos.length) || (r.tags && r.tags.length));
     let streak = 0;
     const d = new Date();
-    while (dates.has(formatDate(d))) {
+    while (dates.has(formatDate(d)) && isReal(state.records[formatDate(d)])) {
       streak++;
       d.setDate(d.getDate() - 1);
     }
