@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>个人成长记录系统</title>
-  <link rel="stylesheet" href="style.css?v=73">
+  <link rel="stylesheet" href="style.css?v=74">
 </head>
 <body>
   <!-- 动态背景装饰 -->
@@ -68,6 +68,10 @@
       <button class="nav-item" data-target="insight">
         <span class="nav-icon">🔮</span>
         <span class="nav-text">洞察</span>
+      </button>
+      <button class="nav-item" data-target="dubai">
+        <span class="nav-icon">💬</span>
+        <span class="nav-text">独白</span>
       </button>
     </nav>
 
@@ -602,6 +606,38 @@
           <div class="suggest-list" id="suggestList"></div>
         </div>
       </section>
+
+      <!-- 独白 -->
+      <section id="dubai" class="section">
+        <header class="page-header">
+          <h1>独白</h1>
+          <p class="date-line">把读到的句子、凭空想起的话，都收进来 💬</p>
+        </header>
+
+        <div class="card input-card border-purple" data-animate="1">
+          <label for="dubaiCollect"><span class="label-icon">📥</span>收集 · 摘录</label>
+          <textarea id="dubaiCollect" rows="8" placeholder="把它们收藏在这里吧——你读到的心动句子，值得被好好保存。"></textarea>
+        </div>
+
+        <div class="card input-card border-pink" data-animate="2">
+          <label for="dubaiMemo"><span class="label-icon">🖋️</span>随记 · 自己写</label>
+          <textarea id="dubaiMemo" rows="8" placeholder="你值得被自己好好听见。此刻想说的话，无论长短，都写下来。"></textarea>
+        </div>
+
+        <button class="btn dubai-add-btn" onclick="app.addDubai()">✨ 收录</button>
+
+        <div class="card dubai-list-card" data-animate="3">
+          <div class="card-header">
+            <span class="card-icon">📖</span>
+            <span class="card-title">我的独白</span>
+          </div>
+          <div id="dubaiList"></div>
+          <div class="empty-state" id="dubaiEmpty" style="display:none;">
+            <div class="illo-stars">✦ ✧ ✦</div>
+            <p>还没有收录内容，写下你的第一条独白吧</p>
+          </div>
+        </div>
+      </section>
     </main>
 
   <!-- 日期详情弹窗 -->
@@ -658,7 +694,7 @@
   <div id="fxVeil" aria-hidden="true"></div>
 </div>
 
-  <script src="script.js?v=42"></script>
+  <script src="script.js?v=43"></script>
   <script src="gsap-local.js?v=1"></script>
   <script src="customease-local.js?v=1"></script>
   <script src="fx-effects.js?v=36"></script>

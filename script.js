@@ -256,6 +256,7 @@ const app = (() => {
       goals: [],
       notes: [],
       weeklyInsight: {},
+      dubai: [],
       markedDates: {},
       settings: { darkMode: false, partnerType: 'seedling' },
       version: 3
@@ -291,6 +292,7 @@ const app = (() => {
       goals: data.goals || [],
       notes: data.notes || [],
       weeklyInsight,
+      dubai: Array.isArray(data.dubai) ? data.dubai : [],
       markedDates: data.markedDates || {},
       settings: normalizeSettings(data.settings),
       version: 3
@@ -490,6 +492,7 @@ const app = (() => {
     if (target === 'review') renderReview();
     if (target === 'display') renderDisplay();
     if (target === 'insight') renderInsights();
+    if (target === 'dubai') renderDubai();
     if (target === 'home') showHomeGreeting();
   }
 
@@ -2926,6 +2929,106 @@ const app = (() => {
     });
   }
 
+  // ---------- 独白 ----------
+  function initDubai() {
+    if (!Array.isArray(state.dubai)) state.dubai = [];
+  }
+
+  function dubaiTime(ts) {
+    const d = new Date(ts);
+    const p = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}.${p(d.getMonth() + 1)}.${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+  }
+
+  function renderDubai() {
+    initDubai();
+    const list = document.getElementById('dubaiList');
+    if (!list) return;
+    const empty = document.getElementById('dubaiEmpty');
+    const items = state.dubai.slice().sort((a, b) => b.time - a.time);
+    if (!items.length) {
+      list.innerHTML = '';
+      if (empty) empty.style.display = 'block';
+      return;
+    }
+    if (empty) empty.style.display = 'none';
+    list.innerHTML = items.map(it => {
+      const cls = it.type === 'collect' ? 'dubai-tag-collect' : 'dubai-tag-memo';
+      const tag = it.type === 'collect' ? '收集' : '随记';
+      return `
+      <div class="dubai-item" data-id="${it.id}">
+        <div class="dubai-item-head">
+          <span class="dubai-tag ${cls}">${tag}</span>
+          <span class="dubai-item-time">${dubaiTime(it.time)}</span>
+          <span class="dubai-item-ops">
+            <button class="btn-text" onclick="app.editDubai('${it.id}')">编辑</button>
+            <button class="btn-text dubai-del" onclick="app.deleteDubai('${it.id}')">删除</button>
+          </span>
+        </div>
+        <div class="dubai-item-text">${escapeHtml(it.text)}</div>
+        <div class="dubai-edit-panel" style="display:none;">
+          <textarea class="dubai-edit-area" rows="4">${escapeHtml(it.text)}</textarea>
+          <div class="dubai-edit-ops">
+            <button class="btn" onclick="app.saveDubai('${it.id}')">保存</button>
+            <button class="btn-text" onclick="app.cancelDubai('${it.id}')">取消</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function pushDubai(type, text) {
+    state.dubai.push({ id: 'd' + Date.now() + Math.random().toString(36).slice(2, 7), type: type, text: text, time: Date.now() });
+  }
+
+  function addDubai() {
+    initDubai();
+    const c = document.getElementById('dubaiCollect');
+    const m = document.getElementById('dubaiMemo');
+    const ct = (c && c.value.trim()) || '';
+    const mt = (m && m.value.trim()) || '';
+    if (!ct && !mt) { alert('先写点什么再收录吧～'); return; }
+    if (ct) pushDubai('collect', ct);
+    if (mt) pushDubai('memo', mt);
+    if (c) c.value = '';
+    if (m) m.value = '';
+    saveData();
+    renderDubai();
+  }
+
+  function editDubai(id) {
+    const card = document.querySelector(`.dubai-item[data-id="${id}"]`);
+    if (!card) return;
+    const data = state.dubai.find(e => e.id === id);
+    card.querySelector('.dubai-item-text').style.display = 'none';
+    card.querySelector('.dubai-edit-panel').style.display = 'block';
+    const ta = card.querySelector('.dubai-edit-area');
+    if (data) ta.value = data.text;
+    ta.focus();
+  }
+
+  function saveDubai(id) {
+    const card = document.querySelector(`.dubai-item[data-id="${id}"]`);
+    const it = state.dubai.find(e => e.id === id);
+    if (!card || !it) return;
+    const v = card.querySelector('.dubai-edit-area').value.trim();
+    if (!v) { alert('内容不能为空'); return; }
+    it.text = v;
+    it.time = Date.now();
+    saveData();
+    renderDubai();
+  }
+
+  function cancelDubai() { renderDubai(); }
+
+  function deleteDubai(id) {
+    if (!confirm('确定删除这条独白吗？')) return;
+    initDubai();
+    state.dubai = state.dubai.filter(e => e.id !== id);
+    saveData();
+    renderDubai();
+  }
+
   function init() {
     initTheme();
     initNav();
@@ -2998,7 +3101,12 @@ const app = (() => {
     closeDateModal,
     toggleTagPanel,
     removeTag,
-    compareInsight
+    compareInsight,
+    addDubai,
+    editDubai,
+    saveDubai,
+    cancelDubai,
+    deleteDubai
   };
 })();
 
