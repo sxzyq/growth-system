@@ -399,13 +399,21 @@ const app = (() => {
     return Object.keys(state.records).sort();
   }
 
+  // 是否真正有内容的记录（排除自动创建的空占位，如每日记录页生成的当天空记录）
+  function isRealRecord(r) {
+    return !!r && (r.completion || r.moment || r.reflection || r.tomorrow || r.moodColor || r.rating || (r.photos && r.photos.length) || (r.tags && r.tags.length));
+  }
+
+  // 只返回真正有内容的记录日期
+  function getRealRecordDates() {
+    return getRecordDates().filter(d => isRealRecord(state.records[d]));
+  }
+
   function calcStreak() {
-    const dates = new Set(getRecordDates());
-    // 只算真正有内容的记录，排除自动创建的空占位（如每日记录页生成的当天空记录）
-    const isReal = r => r && (r.completion || r.moment || r.reflection || r.tomorrow || r.moodColor || r.rating || (r.photos && r.photos.length) || (r.tags && r.tags.length));
+    const dates = new Set(getRealRecordDates());
     let streak = 0;
     const d = new Date();
-    while (dates.has(formatDate(d)) && isReal(state.records[formatDate(d)])) {
+    while (dates.has(formatDate(d))) {
       streak++;
       d.setDate(d.getDate() - 1);
     }
@@ -413,7 +421,7 @@ const app = (() => {
   }
 
   function calcMaxStreak() {
-    const dates = getRecordDates();
+    const dates = getRealRecordDates();
     if (!dates.length) return 0;
     let max = 1, current = 1;
     for (let i = 1; i < dates.length; i++) {
@@ -504,7 +512,7 @@ const app = (() => {
     document.getElementById('greeting').textContent = getGreeting();
     document.getElementById('dateLine').innerHTML = `<span class="calendar-icon">📅</span>${formatDateCN(today)}`;
 
-    const dates = getRecordDates();
+    const dates = getRealRecordDates();
     const reviewEl = document.getElementById('randomReview');
     if (dates.length < 3) {
       const text = encouragements[Math.floor(Math.random() * encouragements.length)];
@@ -837,11 +845,12 @@ const app = (() => {
     for (let d = 1; d <= daysInMonth; d++) {
       const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
       const record = state.records[dateStr];
+      const real = isRealRecord(record);
       const div = document.createElement('div');
       div.className = 'mini-calendar-day';
       div.textContent = d;
 
-      if (record) {
+      if (real) {
         div.classList.add('recorded');
         div.style.setProperty('--dot-color', record.moodColor || '#4ADE80');
         recordedCount++;
@@ -851,7 +860,7 @@ const app = (() => {
 
       const dateObj = new Date(dateStr);
       const isPast = dateObj < new Date(today) && dateStr !== today;
-      if (isPast && !record) div.classList.add('past-missed');
+      if (isPast && !real) div.classList.add('past-missed');
 
       div.onclick = () => showDateDetail(dateStr);
       container.appendChild(div);
