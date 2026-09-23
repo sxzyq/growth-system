@@ -3172,6 +3172,24 @@ document.addEventListener('DOMContentLoaded', app.init);
     document.body.appendChild(el);
     return el;
   }
+  // 监听 totalDays 元素的每次变化与节点替换
+  window.__tdHist = [];
+  function setupObserver() {
+    window.__tdInitT = window.__tdInitT || +new Date();
+    var el = document.getElementById('totalDays');
+    if (!el) { window.__tdHist.push({ t: +new Date(), type: '未见totalDays' }); return; }
+    var push = function (type, target) {
+      window.__tdHist.push({ t: +(new Date()), type: type, val: target && target.textContent, at530: !!(window.__rh && window.__rh.at530) });
+    };
+    push('初始', el);
+    new MutationObserver(function (muts) { muts.forEach(function (m) { if (m.type === 'characterData') push('文本变更', m.target.parentNode || m.target); else if (m.type === 'childList' && m.addedNodes.length) push('子节点变化', m.target); }); })
+      .observe(el, { subtree: true, childList: true, characterData: true });
+    // 也观察父级，捕获整块被替换
+    var p = el.parentNode;
+    if (p) new MutationObserver(function (m) { m.forEach(function (x) { if (x.addedNodes && x.addedNodes.length) window.__tdHist.push({ t: +new Date(), type: '父级插入' }); }); })
+      .observe(p, { childList: true });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setupObserver); else setupObserver();
   window.addEventListener('error', function (e) {
     banner('报错: ' + e.message + '\n位置: line ' + e.lineno + '  col ' + e.colno, '#7f1d1d');
   });
@@ -3208,6 +3226,12 @@ document.addEventListener('DOMContentLoaded', app.init);
           + (window.__rh.error ? '\n异常=' + window.__rh.error : '');
         if (window.__rh.datesStr) info += '\n它看到的日期=' + window.__rh.datesStr;
       } else { info += '\n(从未执行过 renderHome)'; }
+      info += '\n--- totalDays 变化历史 ---';
+      if (window.__tdHist && window.__tdHist.length) {
+        window.__tdHist.slice(0, 8).forEach(function (h) {
+          info += '\n+' + (h.t - window.__tdInitT) + 'ms ' + h.type + (h.val !== undefined ? (' =[' + h.val + ']') : '');
+        });
+      } else { info += '\n(无历史)'; }
       banner(info);
     } catch (err) {
       banner('诊断出错: ' + err.message, '#7f1d1d');
