@@ -3162,7 +3162,19 @@ document.addEventListener('DOMContentLoaded', app.init);
     try {
       var raw = localStorage.getItem('personal-growth-system-v3');
       var info = 'localStorage 有数据: ' + (raw ? ('长度=' + raw.length + ' 字节') : '否');
-      if (raw) { var p = JSON.parse(raw); info += '\n记录 key 数 = ' + Object.keys((p && p.records) || {}).length; }
+      if (raw) {
+        var p = JSON.parse(raw);
+        var keys = Object.keys((p && p.records) || {});
+        info += '\n记录 key 数 = ' + keys.length;
+        if (keys.length) {
+          var k = keys.slice(0, 3);
+          info += '\n前3条日期: ' + k.join(', ');
+          for (var i = 0; i < k.length; i++) {
+            var r = p.records[k[i]];
+            info += '\n[' + k[i] + '] 摘要=' + JSON.stringify(r).slice(0, 120);
+          }
+        }
+      }
       if (document.getElementById('totalDays')) info += '\n首页显示记录天数 = ' + document.getElementById('totalDays').textContent;
       banner(info);
     } catch (err) {
