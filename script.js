@@ -314,6 +314,14 @@ const app = (() => {
 
   function saveData() {
     try {
+      // 防覆盖：若本次要保存的记录为空，而本地其实已有记录，则拒绝保存，避免误清空用户数据
+      if (!Object.keys(state.records || {}).length) {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const p = JSON.parse(raw);
+          if (p && Object.keys(p.records || {}).length) return false;
+        }
+      }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       return true;
     } catch (e) {
@@ -519,6 +527,12 @@ const app = (() => {
     const today = getToday();
     document.getElementById('greeting').textContent = getGreeting();
     document.getElementById('dateLine').innerHTML = `<span class="calendar-icon">📅</span>${formatDateCN(today)}`;
+
+    // 兜底：若 state 未正常装上记录，则从本地重新读取一次，避免首页误显示 0
+    if (!Object.keys(state.records || {}).length) {
+      const reloaded = loadData();
+      if (reloaded && Object.keys(reloaded.records || {}).length) state = reloaded;
+    }
 
     const dates = getRealRecordDates();
     // 记录天数最优先更新，避免后续首页内容渲染出错导致该数字停留在 0
