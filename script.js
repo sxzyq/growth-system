@@ -524,28 +524,19 @@ const app = (() => {
 
   // 首页
   function renderHome() {
-    window.__rh = window.__rh || {};
-    window.__rh.entered = true;
-    try {
     const today = getToday();
-    window.__rh.at529 = true;
     document.getElementById('greeting').textContent = getGreeting();
-    window.__rh.at530 = true;
     document.getElementById('dateLine').innerHTML = `<span class="calendar-icon">📅</span>${formatDateCN(today)}`;
 
     // 兜底：若 state 未正常装上记录，则从本地重新读取一次，避免首页误显示 0
     if (!Object.keys(state.records || {}).length) {
-      window.__rh.reloadBranch = true;
       const reloaded = loadData();
       if (reloaded && Object.keys(reloaded.records || {}).length) state = reloaded;
     }
 
     const dates = getRealRecordDates();
-    window.__rh.datesCount = dates.length;
-    window.__rh.datesStr = dates.join(',');
     // 记录天数最优先更新，避免后续首页内容渲染出错导致该数字停留在 0
     document.getElementById('totalDays').textContent = dates.length;
-    window.__rh.wroteTotalDays = true;
     const reviewEl = document.getElementById('randomReview');
     if (dates.length < 3) {
       const text = encouragements[Math.floor(Math.random() * encouragements.length)];
@@ -586,10 +577,6 @@ const app = (() => {
     renderPartner();
     renderMiniCalendar();
     renderNotes();
-    } catch (err) {
-      window.__rh.error = err.message;
-      throw err;
-    }
   }
 
   // 成长伙伴（专属吉祥物）
@@ -3152,69 +3139,8 @@ const app = (() => {
     editDubai,
     saveDubai,
     cancelDubai,
-    deleteDubai,
-    // [临时] 供诊断读取内存 state 与实际真实记录
-    _diag: function () {
-      return { stateKeys: Object.keys(state.records || {}).length, real: getRealRecordDates().join(',') };
-    }
+    deleteDubai
   };
 })();
 
 document.addEventListener('DOMContentLoaded', app.init);
-
-// ===== [临时排查用] 屏幕显示报错与真实数据，定位后再删除 =====
-(function () {
-  function banner(text, color) {
-    var el = document.createElement('div');
-    el.id = 'diag-banner';
-    el.style.cssText = 'position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:999999;background:' + (color || '#111') + ';color:#ffd75e;font:12px/1.7 Consolas,monospace;padding:8px 14px;border-radius:6px;box-shadow:0 2px 12px rgba(0,0,0,.45);max-width:94vw;white-space:pre-wrap;word-break:break-all;';
-    el.textContent = text;
-    document.body.appendChild(el);
-    return el;
-  }
-  // 监听 totalDays 元素的每次变化与节点替换
-  window.__tdHist = [];
-  function setupObserver() {
-    window.__tdInitT = window.__tdInitT || +new Date();
-    var el = document.getElementById('totalDays');
-    if (!el) { window.__tdHist.push({ t: +new Date(), type: '未见totalDays' }); return; }
-    var push = function (type, target) {
-      window.__tdHist.push({ t: +(new Date()), type: type, val: target && target.textContent, at530: !!(window.__rh && window.__rh.at530) });
-    };
-    push('初始', el);
-    new MutationObserver(function (muts) { muts.forEach(function (m) { if (m.type === 'characterData') push('文本变更', m.target.parentNode || m.target); else if (m.type === 'childList' && m.addedNodes.length) push('子节点变化', m.target); }); })
-      .observe(el, { subtree: true, childList: true, characterData: true });
-    // 也观察父级，捕获整块被替换
-    var p = el.parentNode;
-    if (p) new MutationObserver(function (m) { m.forEach(function (x) { if (x.addedNodes && x.addedNodes.length) window.__tdHist.push({ t: +new Date(), type: '父级插入' }); }); })
-      .observe(p, { childList: true });
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setupObserver); else setupObserver();
-  window.addEventListener('error', function (e) {
-    banner('报错: ' + e.message + '\n位置: line ' + e.lineno + '  col ' + e.colno, '#7f1d1d');
-  });
-  setTimeout(function () {
-    try {
-      var raw = localStorage.getItem('personal-growth-system-v3');
-      var hist = '';
-      if (window.__tdHist && window.__tdHist.length) {
-        window.__tdHist.slice(0, 8).forEach(function (h) {
-          hist += '\n+' + (h.t - window.__tdInitT) + 'ms ' + h.type + (h.val !== undefined ? (' =[' + h.val + ']') : '');
-        });
-      } else { hist += '\n(无历史)'; }
-      var info = '【关键】totalDays 变化历史:' + hist;
-      info += '\n【关键】当前 totalDays 文本 = ' + (document.getElementById('totalDays') ? document.getElementById('totalDays').textContent : '找不到');
-      if (window.__rh) info += '（renderHome 最后写入=' + window.__rh.datesCount + '，写完=' + !!window.__rh.wroteTotalDays + '）';
-      info += '\n--- 下方为辅助信息 ---';
-      info += '\nlocalStorage 长度=' + (raw ? raw.length : 0) + ' 记录key数=' + (raw ? Object.keys(JSON.parse(raw).records || {}).length : 0);
-      try {
-        var d = app._diag();
-        info += '\n内存 state 记录数=' + d.stateKeys + ' 真实记录数=' + (d.real ? d.real.split(',').length : 0);
-      } catch (e2) { info += '\n读取state失败'; }
-      banner(info);
-      setTimeout(function () { try { alert(info.replace('--- 下方为辅助信息 ---', '（完整关键信息）')); } catch (_) {} }, 1200);
-    } catch (err) {
-      banner('诊断出错: ' + err.message + '\n' + err.stack, '#7f1d1d');
-    }
-  }, 500);
-})();

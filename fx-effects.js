@@ -1230,7 +1230,7 @@
     })(start);
   }
   var numEls = [].slice.call(document.querySelectorAll(
-    '.stat-value, .streak-number, .review-stat-value'));
+    '.streak-number, .review-stat-value'));
   numEls.forEach(function (el) {
     var v = parseInt(el.textContent, 10);
     el._fxLastNum = isNaN(v) ? 0 : v;
