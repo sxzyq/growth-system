@@ -524,19 +524,28 @@ const app = (() => {
 
   // 首页
   function renderHome() {
+    window.__rh = window.__rh || {};
+    window.__rh.entered = true;
+    try {
     const today = getToday();
+    window.__rh.at529 = true;
     document.getElementById('greeting').textContent = getGreeting();
+    window.__rh.at530 = true;
     document.getElementById('dateLine').innerHTML = `<span class="calendar-icon">📅</span>${formatDateCN(today)}`;
 
     // 兜底：若 state 未正常装上记录，则从本地重新读取一次，避免首页误显示 0
     if (!Object.keys(state.records || {}).length) {
+      window.__rh.reloadBranch = true;
       const reloaded = loadData();
       if (reloaded && Object.keys(reloaded.records || {}).length) state = reloaded;
     }
 
     const dates = getRealRecordDates();
+    window.__rh.datesCount = dates.length;
+    window.__rh.datesStr = dates.join(',');
     // 记录天数最优先更新，避免后续首页内容渲染出错导致该数字停留在 0
     document.getElementById('totalDays').textContent = dates.length;
+    window.__rh.wroteTotalDays = true;
     const reviewEl = document.getElementById('randomReview');
     if (dates.length < 3) {
       const text = encouragements[Math.floor(Math.random() * encouragements.length)];
@@ -577,6 +586,10 @@ const app = (() => {
     renderPartner();
     renderMiniCalendar();
     renderNotes();
+    } catch (err) {
+      window.__rh.error = err.message;
+      throw err;
+    }
   }
 
   // 成长伙伴（专属吉祥物）
@@ -3184,6 +3197,17 @@ document.addEventListener('DOMContentLoaded', app.init);
         var d = app._diag();
         info += '\n内存 state 记录数 = ' + d.stateKeys + '\n真实记录日期 = ' + (d.real || '(空)');
       } catch (e2) { info += '\n读取内存state失败: ' + e2.message; }
+      info += '\n--- renderHome 探针 ---';
+      if (window.__rh) {
+        info += '\nexecuted(进过函数)=' + !!window.__rh.entered
+          + ' 到529步=' + !!window.__rh.at529
+          + ' 到530步=' + !!window.__rh.at530
+          + ' 走了兜底reload=' + !!window.__rh.reloadBranch
+          + '\n它看到的日期数=' + window.__rh.datesCount
+          + ' 写完totalDays=' + !!window.__rh.wroteTotalDays
+          + (window.__rh.error ? '\n异常=' + window.__rh.error : '');
+        if (window.__rh.datesStr) info += '\n它看到的日期=' + window.__rh.datesStr;
+      } else { info += '\n(从未执行过 renderHome)'; }
       banner(info);
     } catch (err) {
       banner('诊断出错: ' + err.message, '#7f1d1d');
