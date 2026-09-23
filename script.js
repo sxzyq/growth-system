@@ -3144,3 +3144,29 @@ const app = (() => {
 })();
 
 document.addEventListener('DOMContentLoaded', app.init);
+
+// ===== [临时排查用] 屏幕显示报错与真实数据，定位后再删除 =====
+(function () {
+  function banner(text, color) {
+    var el = document.createElement('div');
+    el.id = 'diag-banner';
+    el.style.cssText = 'position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:999999;background:' + (color || '#111') + ';color:#ffd75e;font:12px/1.7 Consolas,monospace;padding:8px 14px;border-radius:6px;box-shadow:0 2px 12px rgba(0,0,0,.45);max-width:94vw;white-space:pre-wrap;word-break:break-all;';
+    el.textContent = text;
+    document.body.appendChild(el);
+    return el;
+  }
+  window.addEventListener('error', function (e) {
+    banner('报错: ' + e.message + '\n位置: line ' + e.lineno + '  col ' + e.colno, '#7f1d1d');
+  });
+  setTimeout(function () {
+    try {
+      var raw = localStorage.getItem('personal-growth-system-v3');
+      var info = 'localStorage 有数据: ' + (raw ? ('长度=' + raw.length + ' 字节') : '否');
+      if (raw) { var p = JSON.parse(raw); info += '\n记录 key 数 = ' + Object.keys((p && p.records) || {}).length; }
+      if (document.getElementById('totalDays')) info += '\n首页显示记录天数 = ' + document.getElementById('totalDays').textContent;
+      banner(info);
+    } catch (err) {
+      banner('诊断出错: ' + err.message, '#7f1d1d');
+    }
+  }, 500);
+})();
