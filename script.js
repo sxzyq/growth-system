@@ -521,6 +521,8 @@ const app = (() => {
     document.getElementById('dateLine').innerHTML = `<span class="calendar-icon">📅</span>${formatDateCN(today)}`;
 
     const dates = getRealRecordDates();
+    // 记录天数最优先更新，避免后续首页内容渲染出错导致该数字停留在 0
+    document.getElementById('totalDays').textContent = dates.length;
     const reviewEl = document.getElementById('randomReview');
     if (dates.length < 3) {
       const text = encouragements[Math.floor(Math.random() * encouragements.length)];
@@ -541,8 +543,6 @@ const app = (() => {
         <button class="btn-text review-edit-btn" onclick="app.editRecordOfDate('${date}')">✏️ 修改这一天</button>
       `;
     }
-
-    document.getElementById('totalDays').textContent = dates.length;
 
     const todayRecord = getTodayRecord();
     const hasToday = todayRecord.completion || todayRecord.moment || todayRecord.rating;
