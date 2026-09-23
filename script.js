@@ -411,8 +411,10 @@ const app = (() => {
 
   function calcStreak() {
     const dates = new Set(getRealRecordDates());
-    let streak = 0;
     const d = new Date();
+    // 若今天还没填内容（比如清早刚打开），不算断签，先看昨天起的连续，避免连续天数直接归零
+    if (!dates.has(formatDate(d))) d.setDate(d.getDate() - 1);
+    let streak = 0;
     while (dates.has(formatDate(d))) {
       streak++;
       d.setDate(d.getDate() - 1);
