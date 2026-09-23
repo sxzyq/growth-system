@@ -211,7 +211,13 @@ const app = (() => {
             if (!Array.isArray(r.tags)) r.tags = [];
           });
         }
-        return ensureDataShape(parsed);
+        try {
+          return ensureDataShape(parsed);
+        } catch (shapeErr) {
+          // 迁移兜底：若形态整理出错，也不要清空用户已有的记录
+          console.warn('数据形态整理出错，保留原始数据', shapeErr);
+          return parsed;
+        }
       }
 
       // 兼容 v2 数据
