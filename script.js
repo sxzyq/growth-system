@@ -3139,7 +3139,11 @@ const app = (() => {
     editDubai,
     saveDubai,
     cancelDubai,
-    deleteDubai
+    deleteDubai,
+    // [临时] 供诊断读取内存 state 与实际真实记录
+    _diag: function () {
+      return { stateKeys: Object.keys(state.records || {}).length, real: getRealRecordDates().join(',') };
+    }
   };
 })();
 
@@ -3176,6 +3180,10 @@ document.addEventListener('DOMContentLoaded', app.init);
         }
       }
       if (document.getElementById('totalDays')) info += '\n首页显示记录天数 = ' + document.getElementById('totalDays').textContent;
+      try {
+        var d = app._diag();
+        info += '\n内存 state 记录数 = ' + d.stateKeys + '\n真实记录日期 = ' + (d.real || '(空)');
+      } catch (e2) { info += '\n读取内存state失败: ' + e2.message; }
       banner(info);
     } catch (err) {
       banner('诊断出错: ' + err.message, '#7f1d1d');
