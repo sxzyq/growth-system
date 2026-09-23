@@ -3196,45 +3196,25 @@ document.addEventListener('DOMContentLoaded', app.init);
   setTimeout(function () {
     try {
       var raw = localStorage.getItem('personal-growth-system-v3');
-      var info = 'localStorage 有数据: ' + (raw ? ('长度=' + raw.length + ' 字节') : '否');
-      if (raw) {
-        var p = JSON.parse(raw);
-        var keys = Object.keys((p && p.records) || {});
-        info += '\n记录 key 数 = ' + keys.length;
-        if (keys.length) {
-          var k = keys.slice(0, 3);
-          info += '\n前3条日期: ' + k.join(', ');
-          for (var i = 0; i < k.length; i++) {
-            var r = p.records[k[i]];
-            info += '\n[' + k[i] + '] 摘要=' + JSON.stringify(r).slice(0, 120);
-          }
-        }
-      }
-      if (document.getElementById('totalDays')) info += '\n首页显示记录天数 = ' + document.getElementById('totalDays').textContent;
-      try {
-        var d = app._diag();
-        info += '\n内存 state 记录数 = ' + d.stateKeys + '\n真实记录日期 = ' + (d.real || '(空)');
-      } catch (e2) { info += '\n读取内存state失败: ' + e2.message; }
-      info += '\n--- renderHome 探针 ---';
-      if (window.__rh) {
-        info += '\nexecuted(进过函数)=' + !!window.__rh.entered
-          + ' 到529步=' + !!window.__rh.at529
-          + ' 到530步=' + !!window.__rh.at530
-          + ' 走了兜底reload=' + !!window.__rh.reloadBranch
-          + '\n它看到的日期数=' + window.__rh.datesCount
-          + ' 写完totalDays=' + !!window.__rh.wroteTotalDays
-          + (window.__rh.error ? '\n异常=' + window.__rh.error : '');
-        if (window.__rh.datesStr) info += '\n它看到的日期=' + window.__rh.datesStr;
-      } else { info += '\n(从未执行过 renderHome)'; }
-      info += '\n--- totalDays 变化历史 ---';
+      var hist = '';
       if (window.__tdHist && window.__tdHist.length) {
         window.__tdHist.slice(0, 8).forEach(function (h) {
-          info += '\n+' + (h.t - window.__tdInitT) + 'ms ' + h.type + (h.val !== undefined ? (' =[' + h.val + ']') : '');
+          hist += '\n+' + (h.t - window.__tdInitT) + 'ms ' + h.type + (h.val !== undefined ? (' =[' + h.val + ']') : '');
         });
-      } else { info += '\n(无历史)'; }
+      } else { hist += '\n(无历史)'; }
+      var info = '【关键】totalDays 变化历史:' + hist;
+      info += '\n【关键】当前 totalDays 文本 = ' + (document.getElementById('totalDays') ? document.getElementById('totalDays').textContent : '找不到');
+      if (window.__rh) info += '（renderHome 最后写入=' + window.__rh.datesCount + '，写完=' + !!window.__rh.wroteTotalDays + '）';
+      info += '\n--- 下方为辅助信息 ---';
+      info += '\nlocalStorage 长度=' + (raw ? raw.length : 0) + ' 记录key数=' + (raw ? Object.keys(JSON.parse(raw).records || {}).length : 0);
+      try {
+        var d = app._diag();
+        info += '\n内存 state 记录数=' + d.stateKeys + ' 真实记录数=' + (d.real ? d.real.split(',').length : 0);
+      } catch (e2) { info += '\n读取state失败'; }
       banner(info);
+      setTimeout(function () { try { alert(info.replace('--- 下方为辅助信息 ---', '（完整关键信息）')); } catch (_) {} }, 1200);
     } catch (err) {
-      banner('诊断出错: ' + err.message, '#7f1d1d');
+      banner('诊断出错: ' + err.message + '\n' + err.stack, '#7f1d1d');
     }
   }, 500);
 })();
